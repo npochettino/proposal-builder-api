@@ -1,20 +1,29 @@
 import { Product } from '@/lib/models/Product';
 import { connectToDatabase } from '@/lib/mongodb';
 import { authenticateRequest } from '@/lib/auth';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // GET /api/products/[id]
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const user = await authenticateRequest(req);
-  if (!user) return new Response('Unauthorized', { status: 401 });
-
-  await connectToDatabase();
-
-  const product = await Product.findById(params.id);
-  if (!product) return new Response('Not Found', { status: 404 });
-
-  return Response.json(product);
-}
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+  ) {
+    try {
+      await authenticateRequest(req);
+      await connectToDatabase();
+  
+      const product = await Product.findById(params.id);
+  
+      if (!product) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+  
+      return NextResponse.json(product, { status: 200 });
+    } catch (error) {
+      console.error(error);
+      return NextResponse.json({ error: 'Server error' }, { status: 500 });
+    }
+  }
 
 // PUT /api/products/[id]
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
