@@ -31,14 +31,15 @@ export async function GET(
 // PUT /api/products/[id]
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   const user = await authenticateRequest(req);
   if (!user) return new Response('Unauthorized', { status: 401 });
 
   const body = await req.json();
   await connectToDatabase();
 
-  const { id } = await params;
+  const id = (await params).id;
 
   const updated = await Product.findByIdAndUpdate(
     id,
@@ -61,7 +62,7 @@ export async function DELETE(
 
   await connectToDatabase();
 
-  const { id } = await params;
+  const id = (await params).id;
 
   const deleted = await Product.findByIdAndDelete(id);
   if (!deleted) return new Response('Not Found', { status: 404 });
