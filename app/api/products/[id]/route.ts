@@ -6,20 +6,21 @@ import { NextRequest, NextResponse } from 'next/server';
 // GET /api/products/[id]
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }) {
+    { params }: { params: Promise<{ id: string }> }
+) {
     try {
-        const { id } = await params
-      await authenticateRequest(req);
-      await connectToDatabase();
+        const id = (await params).id
+        await authenticateRequest(req);
+        await connectToDatabase();
 
 
-      const product = await Product.findById(id);
-  
-      if (!product) {
-        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-      }
-  
-      return NextResponse.json(product, { status: 200 });
+        const product = await Product.findById(id);
+    
+        if (!product) {
+            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+        }
+    
+        return NextResponse.json(product, { status: 200 });
     } catch (error: unknown) {
         console.error(error);
         const message = error instanceof Error ? error.message : 'Failed to fetch products';
