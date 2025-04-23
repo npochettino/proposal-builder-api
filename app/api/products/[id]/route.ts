@@ -6,14 +6,14 @@ import { NextRequest, NextResponse } from 'next/server';
 // GET /api/products/[id]
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
-
-) {
+    { params }: { params: { id: string } }) {
     try {
+        const { id } = await params
       await authenticateRequest(req);
       await connectToDatabase();
-  
-      const product = await Product.findById(params.id);
+
+
+      const product = await Product.findById(id);
   
       if (!product) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
@@ -30,8 +30,7 @@ export async function GET(
 // PUT /api/products/[id]
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: { params: { id: string } }) {
   const user = await authenticateRequest(req);
   if (!user) return new Response('Unauthorized', { status: 401 });
 
