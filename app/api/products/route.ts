@@ -11,12 +11,10 @@ export async function GET(req: NextRequest) {
   try {
     const products = await Product.find({ is_archived: false }).sort({ created_at: -1 });
     return NextResponse.json(products);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch products' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Failed to fetch products';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -36,11 +34,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to create product' },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : 'Failed to fetch products';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
