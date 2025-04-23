@@ -6,15 +6,14 @@ import { NextRequest, NextResponse } from 'next/server';
 // GET /api/products/[id]
 export async function GET(
     req: NextRequest,
-    context: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
+
 ) {
     try {
       await authenticateRequest(req);
       await connectToDatabase();
   
-      const id = await context.params;
-
-      const product = await Product.findById(id);
+      const product = await Product.findById(params.id);
   
       if (!product) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
