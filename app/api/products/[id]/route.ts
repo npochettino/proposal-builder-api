@@ -6,13 +6,13 @@ import { NextRequest, NextResponse } from 'next/server';
 // GET /api/products/[id]
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: { id: string } }
   ) {
     try {
       await authenticateRequest(req);
       await connectToDatabase();
   
-      const product = await Product.findById(params.id);
+      const product = await Product.findById(context.params.id);
   
       if (!product) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 });
